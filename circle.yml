@@ -36,6 +36,7 @@ machine:
     ES_CONF: "/etc/elasticsearch/elasticsearch.yml"
     ES_LOG: "/var/log/elasticsearch/elasticsearch.log"
     # Git merge script is needed for auto-merging dev to master branch.
+    MERGE_SCRIPT: merge.sh
     GIT_UPSTREAM_URL: "git@github.com:dataduke/logstash-demo.git"
     GIT_UPSTREAM_BRANCH_MASTER: "master"
 
@@ -140,18 +141,18 @@ deployment:
     branch: dev
     commands:
       # Push image to Docker Hub.
-      # - docker login -u "${DOCKER_LOGIN_USERNAME}" -p "${DOCKER_LOGIN_PASSWORD}" -e "${DOCKER_LOGIN_EMAIL}"
-      # - docker push "${LS_DOCKER_REPO}:${LS_DOCKER_TAG}"
+      - docker login -u "${DOCKER_LOGIN_USERNAME}" -p "${DOCKER_LOGIN_PASSWORD}" -e "${DOCKER_LOGIN_EMAIL}"
+      - docker push "${LS_DOCKER_REPO}:${LS_DOCKER_TAG}"
       # Merge tested commit into master.
       - ./util/${MERGE_SCRIPT} -c "${CIRCLE_SHA1}" -e "${CIRCLE_BRANCH}" -t "${GIT_UPSTREAM_BRANCH_MASTER}" -r "${GIT_UPSTREAM_URL}"
   master_actions:
     branch: master
     commands:
       # Push image to Docker Hub.
-      # - docker login -u "${DOCKER_LOGIN_USERNAME}" -p "${DOCKER_LOGIN_PASSWORD}" -e "${DOCKER_LOGIN_EMAIL}"
-      # - docker push "${LS_DOCKER_REPO}:${LS_DOCKER_TAG}"
+      - docker login -u "${DOCKER_LOGIN_USERNAME}" -p "${DOCKER_LOGIN_PASSWORD}" -e "${DOCKER_LOGIN_EMAIL}"
+      - docker push "${LS_DOCKER_REPO}:${LS_DOCKER_TAG}"
       - docker tag "${LS_DOCKER_REPO}:${LS_DOCKER_TAG}" "${LS_DOCKER_REPO}:latest"
-      # - docker push "${LS_DOCKER_REPO}:latest"
+      - docker push "${LS_DOCKER_REPO}:latest"
 
 general:
   artifacts:
