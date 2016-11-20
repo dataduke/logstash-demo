@@ -1,0 +1,107 @@
+input {
+    {%- if "log" in LS_INPUT %}
+    file {
+        path => ["{{ LS_LOG_VOL }}/{{ LS_PATTERN }}"]
+        start_position => "beginning"
+    }
+    {%- endif %}
+}
+
+filter {
+    {%- if "log" in LS_INPUT %}
+    if [message] != "" and [message] !~ /^[\s]*$/ {
+
+        # extract fields from message (the logstash content wrapper)
+        json { source => "message" }
+
+        mutate {
+            remove_field => [ "host", "message", "path", "@timestamp", "@version" ]
+        }
+
+        mutate {
+            add_field => {
+                "note" => ""
+            }
+        }
+
+        mutate {
+            add_field => {
+                "[@metadata][LS_LOG_VOL]" => "{{ LS_LOG_VOL }}"
+                "[@metadata][LS_CONFIG_VOL]" => "{{ LS_CONFIG_VOL }}"
+                "[@metadata][LS_LOG]" => "{{ LS_LOG }}"
+                "[@metadata][LS_CONFIG]" => "{{ LS_CONFIG }}"
+                "[@metadata][LS_ENV]" => "{{ LS_ENV }}"
+                "[@metadata][LS_CONF]" => "{{ LS_CONF }}"
+                "[@metadata][LS_INPUT]" => "{{ LS_INPUT }}"
+                "[@metadata][LS_OUTPUT]" => "{{ LS_OUTPUT }}"
+                "[@metadata][ES_TEMPLATE]" => "{{ ES_TEMPLATE }}"
+                "[@metadata][ES_HOSTS]" => "{{ ES_HOSTS }}"
+                "[@metadata][ES_USER]" => "{{ ES_USER }}"
+                "[@metadata][ES_PASSWORD]" => "{{ ES_PASSWORD }}"
+                "[@metadata][ES_INDEX_ALIAS]" => "{{ ES_INDEX_ALIAS }}"
+                "[@metadata][ES_INDEX]" => "{{ ES_INDEX }}"
+                "[@metadata][ES_DOCUMENT_TYPE]" => "{{ ES_DOCUMENT_TYPE }}"
+            }
+        }
+
+        fingerprint {
+            target => "[@metadata][ES_DOCUMENT_ID]"
+            source => ["timestamp", "class", "method"]
+            concatenate_sources => true
+            key => "any-long-encryption-key"
+            method => "SHA1"    # return the same hash if all values of source fields are equal
+        }
+
+    }
+    {%- endif %}
+}
+
+output {
+
+    {%- if "console" in LS_OUTPUT %}
+    stdout { codec => rubydebug { metadata => true } }
+    {%- endif %}
+
+    {%- if "elasticsearch" in LS_OUTPUT or "document" in LS_OUTPUT or "template" in LS_OUTPUT %}
+    if (![tags]) {
+        elasticsearch {
+           hosts => {{ ES_HOSTS }}
+           {%- if ES_USER and ES_PASSWORD %}
+           user => "{{ ES_USER }}"
+           password => "{{ ES_PASSWORD }}"
+           {%- endif %}
+
+           {%- if "elasticsearch" in LS_OUTPUT or "document" in LS_OUTPUT %}
+           index => "{{ ES_INDEX }}"
+           document_type => "{{ ES_DOCUMENT_TYPE }}"
+           document_id => "%{[@metadata][ES_DOCUMENT_ID]}"
+           {%- endif %}
+
+           {%- if "elasticsearch" in LS_OUTPUT or "template" in LS_OUTPUT %}
+           manage_template => true
+           template => "{{ LS_CONFIG_VOL }}/template-demo.json"
+           template_name => "{{ ES_INDEX }}"
+           template_overwrite => true
+           {%- endif %}
+        }
+    }
+    {%- endif %}
+
+    {%- if "log" in LS_OUTPUT or "info" in LS_OUTPUT %}
+    if (![tags]) {
+        file {
+            path => "{{ LS_LOG_VOL }}/{{ LS_INFO }}"
+            codec => "json"   # cannot be changed
+        }
+    }
+    {%- endif %}
+
+    {%- if "log" in LS_OUTPUT or "error" in LS_OUTPUT %}
+    if [tags] {
+        file {
+            path => "{{ LS_LOG_VOL }}/{{ LS_ERROR }}"
+            codec => "json"    # cannot be changed
+        }
+    }
+    {%- endif %}
+}

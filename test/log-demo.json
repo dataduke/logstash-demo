@@ -1,0 +1,2 @@
+{"timestamp":"2016-11-20T11:37:40+00:00","pos":"1","class":"company.AdministrationTest","method":"shouldCreateUser","result":"SUCCESS","runtime":"123","stacktrace":"..."}
+{"timestamp":"2016-11-20T11:37:40+00:00","pos":"2","class":"company.AdministrationTest","method":"shouldCreateCustomer","result":"FAILURE","runtime":"345","stacktrace":"..."}

@@ -1,0 +1,28 @@
+{
+    "template": "{{ ES_INDEX }}",
+    "order" : 0,
+    "settings" : {
+        "number_of_shards" : 5,
+        "number_of_replicas" : 1
+    },
+    "mappings": {
+        "{{ ES_INDEX }}": {
+            "_all": { "enabled": false },
+            "_source": { "enabled": true },
+             "properties" : {
+                "class" : { "type" : "string", "index" : "analyzed" },
+                "method" : { "type" : "string", "index" : "analyzed" },
+                "note" : { "type" : "string", "index" : "analyzed" },
+                "pos" : { "type" : "short", "index" : "analyzed" },
+                "result" : { "type" : "string", "index" : "analyzed" },
+                "runtime" : { "type" : "integer", "index" : "not_analyzed" },
+                "stacktrace" : { "type" : "string", "index" : "not_analyzed" },
+                "timestamp" : { "type" : "string", "index" : "analyzed" }
+            }
+        }
+    }{% if ES_INDEX_ALIAS %},
+    "aliases" : {
+        "{{ ES_INDEX_ALIAS }}" : {}
+    }
+    {%- endif %}
+}
