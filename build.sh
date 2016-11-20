@@ -4,7 +4,7 @@
 set -e
 
 # Docker image name and tag have defaults.
-DOCKER_IMAGE_NAME="epages/to-logstash"
+DOCKER_IMAGE_NAME="dataduke/logstash-demo"
 [[ -n "${LS_DOCKER_REPO}" ]] && DOCKER_IMAGE_NAME="${LS_DOCKER_REPO}"
 DOCKER_IMAGE_TAG="latest"
 [[ -n "${LS_DOCKER_TAG}" ]] && DOCKER_IMAGE_TAG="${LS_DOCKER_TAG}"
