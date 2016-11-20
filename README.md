@@ -2,7 +2,7 @@
 
 | `dev` | `master` |
 | :---: | :------: |
-| [![Circle CI](https://circleci.com/gh/ePages-de/docker-logstash/tree/dev.svg?style=svg&circle-token=9b3456474fd889f35316f663edce2af2b16777e7)](https://circleci.com/gh/ePages-de/to-logstash/tree/dev) | [![Circle CI](https://circleci.com/gh/ePages-de/docker-logstash/tree/master.svg?style=svg&circle-token=9b3456474fd889f35316f663edce2af2b16777e7)](https://circleci.com/gh/ePages-de/to-logstash/tree/master) |
+| [![CircleCI](https://circleci.com/gh/dataduke/logstash-demo/tree/dev.svg?style=svg)](https://circleci.com/gh/dataduke/logstash-demo/tree/dev) | [![CircleCI](https://circleci.com/gh/dataduke/logstash-demo/tree/master.svg?style=svg)](https://circleci.com/gh/dataduke/logstash-demo/tree/master) |
 
 ---
 
